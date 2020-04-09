@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>React Local</title>
+  <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react/16.3.1/umd/react.development.js"></script>
+  <script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/16.3.1/umd/react-dom.development.js"></script>
+  <script type="application/javascript" src="https://unpkg.com/babel-standalone@6.26.0/babel.js"></script>
+  <script src="https://unpkg.com/prop-types@15.6/prop-types.min.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+<script type="text/babel">
+
+
+  class DataList extends React.Component {
+
+    sampleClick = (title, e) => {
+      console.log('#1. ' + title);
+      const seq = e.target.closest('tr').getAttribute('data-seq');
+      console.log('#seq. ' + seq);
+    }
+
+    sampleClick2(title) {
+      // console.log('#2. ' + title);
+      debugger
+    }
+
+    render() {
+      const {data} = this.props;
+      console.log(data);
+      const html = 
+      data.map((v, index) => {
+            return (
+              <tr data-seq={v.seq} key={index}>
+               <td onClick={this.sampleClick2.bind(v)}>{v.seq}</td>
+               <td onClick={(e) => this.sampleClick(v.title, e)}>{v.title}</td>
+              </tr>
+            )
+          });
+      return (
+        <React.Fragment>
+          {html}
+        </React.Fragment>
+      )
+    }
+  }
+
+
+  class ChangeInput extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        isToggleOn: true,
+        data: [
+            {seq:1, 'title': 'lorem1'},
+            {seq:2, 'title': 'lorem2'},
+            {seq:3, 'title': 'lorem3'},
+            {seq:4, 'title': 'lorem4'},
+        ]
+      }
+    }
+    handleEvent = () => {
+      this.setState(state => ({
+        isToggleOn: !this.state.isToggleOn
+      }));
+      let eee = 'display:;';
+      if(this.state.isToggleOn) {
+        eee = 'display:none;'
+      } else {
+        eee = 'display:block;';
+      }
+      document.querySelector('table').style = eee;
+    }
+
+    render() {
+      return (
+      <div>
+        <CustomButton onPress={this.handleEvent}>
+          {this.state.isToggleOn ? 'ON': 'OFF'}
+        </CustomButton>
+        <br/>
+        <table>
+          <thead>
+          <tr>
+            <td>seq</td>
+            <td>title</td>
+          </tr>
+          </thead>
+          <tbody>
+          <DataList data={this.state.data}/>
+          </tbody>
+        </table>
+      </div>
+
+      )
+    }
+  }
+
+
+  const CustomButton = ({onPress, children }) => {
+      return(
+        <button type="button" onClick={onPress}>
+        {children}
+        </button>
+      );
+
+
+  }
+  //----------------------------------------------------//
+  const rootElement = document.getElementById('root');
+  ReactDOM.render(<ChangeInput />, rootElement);
+</script>
+
+</body>
+
+</html>
