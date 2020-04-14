@@ -1,0 +1,230 @@
+<HTML>
+    <HEAD>
+    <META http-equiv = "Content-Type" content = "text/html;charset=utf-8" />
+    <TITLE>셀렉트 박스 항목 이동</TITLE>
+    <SCRIPT language = "JavaScript">
+    /**
+    * 셀렉트 박스에 아이템 추가
+    *
+    * @param name 겉으로 보일 텍스트 값
+    * @param text 실제 값
+    * @param formName 셀렉트 박스명
+    */
+    function insertItem( text, value, formName )
+    {
+    var opt = document.getElementsByName( formName )[0];
+    
+    var newOpt = document.createElement("OPTION");
+    newOpt.setAttribute( "value", value );
+            newOpt.appendChild( document.createTextNode( text ) );
+    
+    opt.appendChild( newOpt );
+    
+    return false;
+    }
+    
+    /**
+    * 항목 삭제
+    *
+    * @param formName 셀렉트 박스명
+    */
+    function deleteItem( formName )
+    {
+    var sel = document.getElementsByName( formName )[0];
+    
+    if( sel.selectedIndex < 0 )
+    {
+    alert("삭제할 아이템을 선택하여 주십시오.");
+    return;
+    }
+    
+    while( true )
+    {
+    if( sel.selectedIndex != -1 )
+    sel.remove( sel.selectedIndex );
+    else
+    break;
+    }
+    }
+    
+    /**
+    * 위치 이동
+    *
+    * @param type U(위), D(아래), T(맨위), B(맨아래) 의 위치 이동 키
+    * @param formName 셀렉트 박스명
+    */
+    function moveItem( type, formName )
+    {
+    var sel = document.getElementsByName( formName )[0];
+    
+    var index = sel.selectedIndex;
+    
+    if( type == "U" )
+    {
+    if( index > 0 )
+    {
+    swap( sel, index, index - 1 );
+    }
+    }
+    else if( type == "D" )
+    {
+    if( index < sel.options.length-1 )
+    {
+    swap( sel, index, index + 1 );
+    }
+    }
+    else if( type == "T" )
+    {
+    for( var i = index; i > 0; i-- )
+    {
+    swap( sel, i, i - 1 );
+    }
+    }
+    else if( type == "B" )
+    {
+    for( var i = index; i < sel.options.length - 1; i++ )
+    {
+    swap( sel, i, i + 1 );
+    }
+    }
+    }
+    
+    /**
+    * 실제 데이터 교체를 담당
+    *
+    * @param selectedOption 셀렉트 박스
+    * @param index 현재 위치
+    * @param targetIndex 이동 위치
+    */
+    function swap( selectedOption, index, targetIndex )
+    {
+    var onetext = selectedOption.options[targetIndex].text;
+    var onevalue = selectedOption.options[targetIndex].value;
+    
+    selectedOption.options[targetIndex].text  = selectedOption.options[index].text;
+    selectedOption.options[targetIndex].value = selectedOption.options[index].value;
+    selectedOption.options[index].text = onetext;
+    selectedOption.options[index].value = onevalue;
+    selectedOption.options.selectedIndex = targetIndex;
+    
+    selectedOption.options[targetIndex].selected = true;
+    }
+    
+    /**
+    * 지정한 위치로 데이터를 이동 시킴
+    *
+    * @param fromFormName 본 항목을 포함하는 폼명
+    * @param toFormName 이동할 폼명
+    */
+    function moveAnotherForm( fromFormName, toFormName )
+    {
+    var from = document.getElementsByName( fromFormName )[0];
+    var to = document.getElementsByName( toFormName )[0];
+    
+    // 다중 선택시 이동을 위함
+    while( true )
+    {
+    if( from.selectedIndex != -1 )
+    {
+    // 이동할 항목의 데이터를 추출하여
+    var text = from.options[ from.selectedIndex ].text;
+    var value = from.options[ from.selectedIndex ].value;
+    
+    // 이동될 위치에 새로 삽입한 후
+    insertItem( text, value, toFormName );
+    
+    // 기존 항목은 삭제함
+    from.remove( from.selectedIndex );
+    }
+    else
+    {
+    break;
+    }
+    }
+    }
+    </SCRIPT>
+    </HEAD>
+    <BODY>
+    <FORM name = "form" method = "post">
+    <TABLE width = "100%">
+    <TR>
+    <TD align = "center">
+    <TABLE width = "800">
+    <TR>
+    <TD width = "350" align = "center" bgcolor = "#f0f0f0" nowrap valign = "top">
+    <TABLE width = "100%">
+    <TR>
+    <TD colspan = "2" align = "center">좌측 항목</TD>
+    </TR>
+    <TR>
+    <TD width = "250" align = "center">
+    <SELECT multiple name = "left_item" style = "width:280px;height:180px">
+    <OPTION value = "1">A</OPTION>
+    <OPTION value = "2">B</OPTION>
+    <OPTION value = "3">C</OPTION>
+    <OPTION value = "4">D</OPTION>
+    </SELECT>
+    </TD>
+    <TD width = "100" align = "center">
+    <A href = "javascript:moveItem( 'T', 'left_item' );">맨위</A><BR><BR>
+    <A href = "javascript:moveItem( 'U', 'left_item' );">위</A><BR><BR>
+    <A href = "javascript:moveItem( 'D', 'left_item' );">아래</A><BR><BR>
+    <A href = "javascript:moveItem( 'B', 'left_item' );">맨아래</A>
+    </TD>
+    </TR>
+    <TR>
+    <TD colspan = "2" align = "center"><A href = "javascript:deleteItem('left_item')">삭제</A></TD>
+    </TR>
+    </TABLE>
+    </TD>
+    <TD width = "100">
+    <A href = "#" onClick = "moveAnotherForm( 'right_item', 'left_item' )"><-</A>
+    <A href = "#" onClick = "moveAnotherForm( 'left_item', 'right_item' )">-></A>
+    </TD>
+    <TD width = "350" align = "center" bgcolor = "#f0f0f0" nowrap valign = "top">
+    <TABLE width = "100%">
+    <TR>
+    <TD colspan = "2" align = "center">우측 항목</TD>
+    </TR>
+    <TR>
+    <TD width = "250" align = "center">
+    <SELECT multiple name = "right_item" style = "width:280px;height:180px">
+    <OPTION value = "1">A</OPTION>
+    <OPTION value = "2">B</OPTION>
+    <OPTION value = "3">C</OPTION>
+    <OPTION value = "4">D</OPTION>
+    </SELECT>
+    </TD>
+    <TD width = "100" align = "center">
+    <A href = "javascript:moveItem( 'T', 'right_item' );">맨위</A><BR><BR>
+    <A href = "javascript:moveItem( 'U', 'right_item' );">위</A><BR><BR>
+    <A href = "javascript:moveItem( 'D', 'right_item' );">아래</A><BR><BR>
+    <A href = "javascript:moveItem( 'B', 'right_item' );">맨아래</A>
+    </TD>
+    </TR>
+    <TR>
+    <TD colspan = "2" align = "center"><A href = "javascript:deleteItem('right_item')">삭제</A></TD>
+    </TR>
+    </TABLE>
+    </TD>
+    </TR>
+    <TR height = "50">
+    <TD colspan = "3" align = "center">
+    <INPUT type = "button" value = "저장" onClick = "save()">
+    </TD>
+    </TR>
+    </TABLE>
+    <SELECT name = "form_name">
+    <OPTION value = "left_item">좌측으로</OPTION>
+    <OPTION value = "right_item">우측으로</OPTION>
+    </SELECT>
+    <INPUT type = "text" name = "txt">
+    <INPUT type = "button" onClick = "return insertItem( form.txt.value, form.txt.value, form.form_name.value )" value = "들어가랏">
+    </TD>
+    </TR>
+    </TABLE>
+    </FORM>
+    </BODY>
+    </HTML>
+    
+    출처: https://blueamor.tistory.com/940 [51%의 가능성]
